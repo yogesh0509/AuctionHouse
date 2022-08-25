@@ -1,29 +1,62 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.8;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract IdentityNft is ERC721{
+contract IdentityNft is ERC721URIStorage, Ownable{
 
     uint256 private s_tokenCounter;
-    string private s_tokenUri;
 
     event nftminted(uint256 indexed tokenId);
+    event Attest(address indexed to, uint256 indexed tokenId);
+    event Revoke(address indexed to, uint256 indexed tokenId);
 
-    constructor(string memory tokenUri) ERC721("Player Identity Card", "PIC"){
+    constructor() ERC721("Player Identity Card", "PIC"){
         s_tokenCounter = 0;
-        s_tokenUri = tokenUri;
     }
 
-    function mintNft(address player) public{
-        _safeMint(player, s_tokenCounter);
-        emit nftminted(s_tokenCounter);
+    function mintNft(address player, string memory tokenUri) public{
+
         s_tokenCounter += 1;
+        emit nftminted(s_tokenCounter);
+        _safeMint(player, s_tokenCounter);
+        _setTokenURI(s_tokenCounter, tokenUri);
     }
 
-    function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-        return s_tokenUri;
+    function burn(uint256 tokenId) external {
+        require(ownerOf(tokenId) == msg.sender, "Only owner of the token can burn it");
+        _burn(tokenId);
+    }
+
+    function revoke(uint256 tokenId) external onlyOwner {
+        _burn(tokenId);
+    }
+
+    function _beforeTokenTransfer(address from, address to, uint256) pure override internal {
+        require(from == address(0) || to == address(0), "Not allowed to transfer token");
+    }
+
+    function _afterTokenTransfer(address from, address to, uint256 tokenId) override internal {
+
+        if (from == address(0)) {
+            emit Attest(to, tokenId);
+        } else if (to == address(0)) {
+            emit Revoke(to, tokenId);
+        }
+    }
+
+    function _burn(uint256 tokenId) internal override {
+        super._burn(tokenId);
+    }
+
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        override
+        returns (string memory)
+    {
+        return super.tokenURI(tokenId);
     }
 
     function getTokenCounter() public view returns (uint256) {
