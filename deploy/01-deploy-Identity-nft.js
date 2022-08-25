@@ -7,9 +7,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
     const tokenUri = "ipfs://bafyreiflh4wjd2shgk2kguff5gl5uv6ifpdszfgfep2itve3tdzqugx7mu/metadata.json";
 
-    const arguments = [
-        tokenUri
-    ]
+    const arguments = []
     const waitBlockConfirmations = developmentChains.includes(network.name)
         ? 1
         : 6
@@ -26,4 +24,4 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     }
 }
 
-module.exports.tags = ["all", "identitiynft"]
+module.exports.tags = ["all", "identitynft"]

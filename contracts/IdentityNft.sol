@@ -3,6 +3,7 @@ pragma solidity ^0.8.8;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "hardhat/console.sol";
 
 contract IdentityNft is ERC721URIStorage, Ownable{
 
@@ -12,20 +13,23 @@ contract IdentityNft is ERC721URIStorage, Ownable{
     event Attest(address indexed to, uint256 indexed tokenId);
     event Revoke(address indexed to, uint256 indexed tokenId);
 
+    error OnlyOwnerNft();
+
     constructor() ERC721("Player Identity Card", "PIC"){
         s_tokenCounter = 0;
     }
 
     function mintNft(address player, string memory tokenUri) public{
-
-        s_tokenCounter += 1;
-        emit nftminted(s_tokenCounter);
         _safeMint(player, s_tokenCounter);
         _setTokenURI(s_tokenCounter, tokenUri);
+        s_tokenCounter += 1;
+        emit nftminted(s_tokenCounter);
     }
 
     function burn(uint256 tokenId) external {
-        require(ownerOf(tokenId) == msg.sender, "Only owner of the token can burn it");
+        if(ownerOf(tokenId) != msg.sender){
+            revert OnlyOwnerNft();
+        }
         _burn(tokenId);
     }
 
@@ -46,8 +50,8 @@ contract IdentityNft is ERC721URIStorage, Ownable{
         }
     }
 
-    function _burn(uint256 tokenId) internal override {
-        super._burn(tokenId);
+    function transferFrom(address from, address to, uint256 tokenId) public override{
+        super.transferFrom(from, to, tokenId);
     }
 
     function tokenURI(uint256 tokenId)

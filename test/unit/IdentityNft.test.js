@@ -15,25 +15,36 @@ const tokenUri = "ipfs://bafyreiflh4wjd2shgk2kguff5gl5uv6ifpdszfgfep2itve3tdzqug
             await deployments.fixture(["all"])
             IdentityNftContract = await ethers.getContract("IdentityNft")
             IdentityNft = IdentityNftContract.connect(accounts[0])
-        })
-
-        describe("mint nft", () => {
-
-            it("check for token counter", async () => {
-                await IdentityNft.mintNft(accounts[1].address);
-                assert.equal((await IdentityNft.getTokenCounter()).toString(), 1)
-            })
-
-            it("check for nft minted event", async () => {
-                await expect(IdentityNft.mintNft(accounts[1].address)).to.emit(IdentityNft, "nftminted")
-            })
+            await IdentityNft.mintNft(accounts[1].address, tokenUri);
 
         })
 
-        describe("token uri", ()=>{
-            it("check token uri", async()=>{
-                await IdentityNft.mintNft(accounts[1].address);
+        describe("token uri", () => {
+            it("check token uri", async () => {
                 assert.equal((await IdentityNft.tokenURI(0)).toString(), tokenUri)
+            })
+        })
+
+        describe("erase nft of a tokenId", () => {
+            it("check owner of tokenId", async () => {
+                await expect(IdentityNft.burn(0)).to.be.revertedWith("OnlyOwnerNft")
+            })
+
+            it("burn nft", async () => {
+                IdentityNft = IdentityNftContract.connect(accounts[1])
+                await expect(IdentityNft.burn(0)).to.emit(IdentityNft, "Revoke")
+            })
+
+            it("revoke nft", async () => {
+                await expect(IdentityNft.revoke(0)).to.emit(IdentityNft, "Revoke")
+            })
+        })
+
+        describe("disable token transfer", () => {
+            it("check for error message", async () => {
+                IdentityNft = IdentityNftContract.connect(accounts[1])
+                await expect(IdentityNft.transferFrom(accounts[1].address, accounts[2].address, 0))
+                    .to.be.revertedWith("Not allowed to transfer token")
             })
         })
     })
