@@ -2,27 +2,42 @@
 pragma solidity ^0.8.8;
 
 import "./AuctionHouse.sol";
+import "hardhat/console.sol";
 
-contract MarketPlace is AuctionHouse{
-    // address payable private s_beneficiary;
-    // uint256 private s_auctionEndTime;
-    // address private s_highestBidder;
-    // uint256 private s_highestBid;
+contract Marketplace is AuctionHouse {
+    struct playerBought {
+        address player;
+        uint256 price;
+    }
 
-    // mapping(address => uint256) public pendingReturns;
-    // bool ended = false;
+    uint256 private s_totalBuyers;
+    mapping(address => bool) public Buyer;
+    mapping(address => mapping(uint256 => playerBought)) public BuyerTransactions;
+    mapping(address => uint256) public BuyerTransactionCount;
 
-    // event HighestBidIncrease(address bidder, uint256 amount);
-    // event AuctionEnded(address winner, uint256 amount);
+    // Auction Starts - calls the AuctionHouse Contract. sets the time for auction of each contract. return the winner of the auction.
+    // pass the player being auctioned.
+    // constructor - gets all the registered players.
 
-    // error AuctionHasEnded();
-    // error AuctionNotEnded();
-    // error AuctionEndAlreadyCalled();
-    // error NeedHigherBid(uint256 highest_bid);
-    // error TransferFailed();
+    modifier checkbuyer(address registrant) {
+        if (Buyer[registrant] == true) {
+            console.log("Buyer already registered");
+            revert BuyerAlreadyRegistered();
+        }
+        _;
+    }
 
-    constructor() AuctionHouse(3600){
-        
+    error BuyerAlreadyRegistered();
+
+    event BuyerRegistered(address registrant);
+
+    constructor() AuctionHouse(3600) {
+
+    }
+
+    function register(address registrant) public checkbuyer(registrant){
+        Buyer[registrant] = true;
+        emit BuyerRegistered(registrant);
     }
 
 }
