@@ -5,6 +5,7 @@ require("@nomiclabs/hardhat-waffle");
 require("hardhat-gas-reporter");
 require("hardhat-deploy")
 require("solidity-coverage");
+require("./tasks/uploadToNftStorage")
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
@@ -14,11 +15,11 @@ module.exports = {
   solidity: "0.8.8",
   networks: {
 
-    rinkeby: {
-      url: process.env.RINKEBY_URL || "",
+    goerli: {
+      url: process.env.GOERLI_URL || "",
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
-      chainId: 420,
+      chainId: 5,
       gas: 2100000,
       gasPrice: 8000000000
     },
@@ -29,8 +30,11 @@ module.exports = {
     },
   },
   gasReporter: {
-    enabled: process.env.REPORT_GAS !== undefined,
-    currency: "USD",
+    enabled: process.env.REPORT_GAS || false,
+    currency: "INR",
+    outputFile: "gas-report.txt",
+    noColors: true,
+    coinmarketcap: process.env.COINMARKETCAP_API_KEY
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,

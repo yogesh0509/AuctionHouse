@@ -4,9 +4,7 @@ const { verify } = require("../utils/verify")
 module.exports = async ({ getNamedAccounts, deployments }) => {
     const { deploy, log } = deployments
     const { deployer } = await getNamedAccounts()
-
-    const tokenUri = "ipfs://bafyreiflh4wjd2shgk2kguff5gl5uv6ifpdszfgfep2itve3tdzqugx7mu/metadata.json";
-
+    
     const arguments = []
     const waitBlockConfirmations = developmentChains.includes(network.name)
         ? 1
@@ -24,4 +22,4 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     }
 }
 
-module.exports.tags = ["all", "identitynft"]
+module.exports.tags = ["all", "identitynft", "main"]

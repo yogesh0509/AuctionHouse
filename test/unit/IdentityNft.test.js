@@ -15,7 +15,7 @@ const tokenUri = "ipfs://bafyreiflh4wjd2shgk2kguff5gl5uv6ifpdszfgfep2itve3tdzqug
             await deployments.fixture(["all"])
             IdentityNftContract = await ethers.getContract("IdentityNft")
             IdentityNft = IdentityNftContract.connect(accounts[0])
-            await IdentityNft.mintNft(accounts[1].address, tokenUri);
+            await IdentityNft.mintNft(tokenUri);
 
         })
 
@@ -27,23 +27,19 @@ const tokenUri = "ipfs://bafyreiflh4wjd2shgk2kguff5gl5uv6ifpdszfgfep2itve3tdzqug
 
         describe("erase nft of a tokenId", () => {
             it("check owner of tokenId", async () => {
-                await expect(IdentityNft.burn(0)).to.be.revertedWith("OnlyOwnerNft")
+                IdentityNft = IdentityNftContract.connect(accounts[1])
+                await expect(IdentityNft.burn(0)).to.be.revertedWith("Ownable: caller is not the owner")
             })
 
             it("burn nft", async () => {
-                IdentityNft = IdentityNftContract.connect(accounts[1])
                 await expect(IdentityNft.burn(0)).to.emit(IdentityNft, "Revoke")
             })
 
-            it("revoke nft", async () => {
-                await expect(IdentityNft.revoke(0)).to.emit(IdentityNft, "Revoke")
-            })
         })
 
         describe("disable token transfer", () => {
             it("check for error message", async () => {
-                IdentityNft = IdentityNftContract.connect(accounts[1])
-                await expect(IdentityNft.transferFrom(accounts[1].address, accounts[2].address, 0))
+                await expect(IdentityNft.transferFrom(accounts[0].address, accounts[2].address, 0))
                     .to.be.revertedWith("Not allowed to transfer token")
             })
         })

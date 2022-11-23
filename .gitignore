@@ -3,9 +3,10 @@ artifacts
 cache
 deployments
 node_modules
+image
 coverage
 coverage.json
-
+.png
 # don't push the environment vars!
 .env
 

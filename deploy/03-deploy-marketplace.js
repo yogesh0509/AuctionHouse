@@ -1,12 +1,29 @@
 const { developmentChains } = require("../helper-hardhat-config")
 const { verify } = require("../utils/verify")
 
+const tokenUri = "ipfs://bafyreiflh4wjd2shgk2kguff5gl5uv6ifpdszfgfep2itve3tdzqugx7mu/metadata.json";
+
 module.exports = async ({ getNamedAccounts, deployments }) => {
     const { deploy, log } = deployments
     const { deployer } = await getNamedAccounts()
+    let chainId = network.config.chainId;
+    let IdentityNftAddress, AuctionHouseAddress;
 
-    const arguments = [
-    ]
+    if (developmentChains.includes(network.name)) {
+        const IdentityNft = await ethers.getContract("IdentityNft");
+        const AuctionHouse = await ethers.getContract("AuctionHouse");
+        await IdentityNft.mintNft(tokenUri);
+        await IdentityNft.mintNft(tokenUri);
+        IdentityNftAddress = IdentityNft.address;
+        AuctionHouseAddress = AuctionHouse.address
+       
+    }
+    else {
+        IdentityNftAddress = networkConfig[chainId]["IdentityNftAddress"];
+        AuctionHouseAddress = networkConfig[chainId]["AuctionHouseAddress"];
+    }
+
+    const arguments = [IdentityNftAddress, AuctionHouseAddress]
     const waitBlockConfirmations = developmentChains.includes(network.name)
         ? 1
         : 6
@@ -23,4 +40,4 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     }
 }
 
-module.exports.tags = ["all", "marketplace"]
+module.exports.tags = ["all", "marketplace", "main"]

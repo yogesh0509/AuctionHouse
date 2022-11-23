@@ -13,27 +13,19 @@ contract IdentityNft is ERC721URIStorage, Ownable{
     event Attest(address indexed to, uint256 indexed tokenId);
     event Revoke(address indexed to, uint256 indexed tokenId);
 
-    error OnlyOwnerNft();
 
     constructor() ERC721("Player Identity Card", "PIC"){
         s_tokenCounter = 0;
     }
 
-    function mintNft(address player, string memory tokenUri) public{
-        _safeMint(player, s_tokenCounter);
+    function mintNft(string memory tokenUri) public onlyOwner{
+        _safeMint(msg.sender, s_tokenCounter);
         _setTokenURI(s_tokenCounter, tokenUri);
         s_tokenCounter += 1;
         emit nftminted(s_tokenCounter);
     }
 
-    function burn(uint256 tokenId) external {
-        if(ownerOf(tokenId) != msg.sender){
-            revert OnlyOwnerNft();
-        }
-        _burn(tokenId);
-    }
-
-    function revoke(uint256 tokenId) external onlyOwner {
+    function burn(uint256 tokenId) external onlyOwner{
         _burn(tokenId);
     }
 

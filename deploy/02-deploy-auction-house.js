@@ -1,13 +1,13 @@
 const { developmentChains } = require("../helper-hardhat-config")
 const { verify } = require("../utils/verify")
 
+const AUCTION_TIME = 86400;
+
 module.exports = async ({ getNamedAccounts, deployments }) => {
     const { deploy, log } = deployments
     const { deployer } = await getNamedAccounts()
 
-    const arguments = [
-        3600
-    ]
+    const arguments = [AUCTION_TIME]
     const waitBlockConfirmations = developmentChains.includes(network.name)
         ? 1
         : 6
@@ -24,4 +24,4 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     }
 }
 
-module.exports.tags = ["all", "auctionhouse"]
+module.exports.tags = ["all", "auctionhouse", "main"]

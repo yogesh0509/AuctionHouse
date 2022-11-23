@@ -15,6 +15,7 @@ const networkConfig = {
         mintFee: "10000000000000000", // 0.01 ETH
         callbackGasLimit: "500000", // 500,000 gas
         vrfCoordinatorV2: "https://goerli.etherscan.io/address/0x2Ca8E0C643bDe4C2E08ab1fA0da3401AdAD7734D",
+        IdentityNftAddress: "0x5c64E89F494f595dbFb00FCE6acfD8BC4E1a3475"
     }
 }
 
