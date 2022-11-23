@@ -6,8 +6,8 @@ node_modules
 image
 coverage
 coverage.json
-.png
 # don't push the environment vars!
 .env
 
-gas-report.txt
+*.png
+*.txt
